@@ -1,14 +1,20 @@
 import {
-  BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
 } from '@nestjs/common';
 import { MetricsService } from '../services/metrics.service';
 import { ResponseDto } from '../../utils/dto/response.dto';
-import { Metric } from '../interface/metrics.i';
+import {
+  GetMetricChart,
+  GetMetricsDto,
+  Metric,
+  MetricResponse,
+} from '../interface/metrics.i';
 
 @Controller('metrics')
 export class MetricsController {
@@ -25,7 +31,55 @@ export class MetricsController {
         httpStatus: HttpStatus.CREATED,
       };
     } catch (error) {
-      throw new BadRequestException('Error adding metric');
+      return {
+        success: false,
+        message: `Metric added failed: ${error.message}`,
+        httpStatus: HttpStatus.BAD_REQUEST,
+      };
+    }
+  }
+
+  @Get('list')
+  @HttpCode(HttpStatus.OK)
+  async getMetrics(
+    @Query() params: GetMetricsDto,
+  ): Promise<ResponseDto<Array<MetricResponse>>> {
+    try {
+      const result = await this.service.getMetricsByUser(params);
+      return {
+        success: true,
+        message: 'Get List Metrics By User Successfully',
+        httpStatus: HttpStatus.OK,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Get List Metrics By User Failed: ${error.message}`,
+        httpStatus: HttpStatus.BAD_REQUEST,
+      };
+    }
+  }
+
+  @Get('chart')
+  @HttpCode(HttpStatus.OK)
+  async getDataForChart(
+    @Query() params: GetMetricChart,
+  ): Promise<ResponseDto<Array<MetricResponse>>> {
+    try {
+      const result = await this.service.getDataForChart(params);
+      return {
+        success: true,
+        message: 'Get List Metrics For Chart Successfully',
+        httpStatus: HttpStatus.OK,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Get List Metrics For Chart Failed: ${error.message}`,
+        httpStatus: HttpStatus.BAD_REQUEST,
+      };
     }
   }
 }

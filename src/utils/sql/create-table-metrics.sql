@@ -1,7 +1,7 @@
 CREATE TABLE metrics (
   id SERIAL,
   user_id INTEGER NOT NULL,
-  date_created DATE NOT NULL,
+  date_created TIMESTAMP NOT NULL,
   value FLOAT NOT NULL,
   unit VARCHAR(10) NOT NULL,
   type VARCHAR(10) NOT NULL,
